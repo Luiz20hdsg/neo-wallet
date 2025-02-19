@@ -1,0 +1,10 @@
+sequenceDiagram
+  Usuário->>+Auth-Service: POST /signup (CPF, e-mail, telefone)
+  Auth-Service->>Redis: Salva OTP (5 minutos)
+  Auth-Service->>Twilio/Nodemailer: Envia OTP
+  Usuário->>+Auth-Service: POST /verify-otp (OTP)
+  Auth-Service->>Redis: Valida OTP
+  Auth-Service->>Usuário: Redireciona para upload de documentos
+  Usuário->>+Auth-Service: POST /upload-docs (selfie, documento)
+  Auth-Service->>AWS Rekognition: Valida face
+  Auth-Service->>Usuário: Conta verificada (JWT)
