@@ -1,29 +1,42 @@
 import React, { useEffect } from 'react';
-import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
-const FaceMonitor = () => {
+const FaceMonitor = ({ onLogout }) => {
   useEffect(() => {
+    console.log('FaceMonitor: Iniciando monitoramento');
     const monitorFace = async () => {
-      const faceAuth = await AsyncStorage.getItem('faceAuth') === 'true';
-      if (!faceAuth) return;
+      try {
+        const faceAuth = await AsyncStorage.getItem('faceAuth') === 'true';
+        console.log('FaceMonitor: faceAuth:', faceAuth);
+        if (!faceAuth) return;
 
-      const interval = setInterval(() => {
-        // Simulação de monitoramento facial (substituir por visão real no futuro)
-        const isOwner = Math.random() > 0.1; // 90% de chance de ser o dono (simulação)
-        if (!isOwner) {
-          Alert.alert('Aviso', 'Usuário não reconhecido. Encerrando sessão.');
-          AsyncStorage.removeItem('token');
-          // Forçar logout (necessita de contexto de navegação para ser mais robusto)
-        }
-      }, 10000); // Verifica a cada 10 segundos
+        const interval = setInterval(() => {
+          const isOwner = Math.random() > 0.1; // Simulação
+          console.log('FaceMonitor: Verificando rosto, isOwner:', isOwner);
+          if (!isOwner) {
+            if (Platform.OS === 'web') {
+              window.alert('Usuário não reconhecido. Encerrando sessão.');
+            } else {
+              console.log('FaceMonitor: Usuário não reconhecido, encerrando sessão');
+            }
+            AsyncStorage.removeItem('token');
+            if (onLogout) onLogout();
+          }
+        }, 10000);
 
-      return () => clearInterval(interval);
+        return () => {
+          console.log('FaceMonitor: Parando monitoramento');
+          clearInterval(interval);
+        };
+      } catch (error) {
+        console.error('FaceMonitor: Erro ao verificar faceAuth:', error);
+      }
     };
     monitorFace();
-  }, []);
+  }, [onLogout]);
 
-  return null; // Componente invisível
+  return null;
 };
 
 export default FaceMonitor;
