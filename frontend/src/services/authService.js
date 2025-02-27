@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://localhost:80'; // Via api-gateway
+// Use o IP da sua máquina na mesma rede Wi-Fi que o celular
+const API_URL = 'http://192.168.3.65:3000'; // Substitua pelo IP do seu computador
 
 export const register = async (userData) => {
   const response = await fetch(`${API_URL}/register`, {
