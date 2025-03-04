@@ -15,4 +15,4 @@ const WalletSchema = new mongoose.Schema({
 
 const Wallet = mongoose.model("Wallet", WalletSchema);
 
-MediaSourceHandle.exports = Wallet;
+module.exports = Wallet;

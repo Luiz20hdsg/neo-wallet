@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const walletService = require("../services/wallet.service");
+const walletService = require("../../services/wallet.service");
 
 // Rota para criar nova carteira para usuario
 router.post("/create", async(req, res) => {

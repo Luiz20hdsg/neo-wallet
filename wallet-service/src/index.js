@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const walletRoutes = require("./api/wallet.controller");
+const walletRoutes = require("./api/controllers/wallet.controller");
 
 const app = express();
 app.use(express.json());
@@ -15,7 +15,7 @@ mongoose.connect("mongodb://localhost:27017/walletDB", {
 // Rotas da API
 app.use("/wallet", walletRoutes);
 
-const PORT = 3000;
+const PORT = 3000; //porta definida
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
