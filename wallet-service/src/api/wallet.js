@@ -3,23 +3,27 @@ const jwt = require('jsonwebtoken');
 const WalletService = require('../services/walletService');
 
 const router = express.Router();
-const JWT_SECRET = 'c0c26e96ef4e75a40e49927d7aabf4ac59a59fe8c66becd71cf0d5b6a0539ce6'; // Mesma chave do auth-service
+const JWT_SECRET = 'supersecretjwtkey123'; // Mesma chave do auth-service
 
 // Middleware de autenticação
 const authenticate = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Token não fornecido' });
+  console.log('Token recebido:', token); // Log do token bruto
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('Token decodificado:', decoded); // Log do payload decodificado
     req.userEmail = decoded.email;
     next();
   } catch (error) {
+    console.error('Erro na validação do token:', error.message); // Log do erro específico
     res.status(401).json({ error: 'Token inválido' });
   }
 };
 
 router.get('/balance', authenticate, async (req, res) => {
   try {
+    console.log('Balance solicitado para:', req.userEmail);
     const balance = await WalletService.getBalance(req.userEmail);
     res.json({ success: true, balance });
   } catch (error) {

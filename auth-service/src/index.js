@@ -1,17 +1,23 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const app = express();
 
 app.use(express.json());
 
 // Simulação de "banco de dados" em memória
-const users = []; // { email, fullName, cpf, phone, token, pin, password }
+const users = [
+  { email: 'teste@email.com', token: '123456', fullName: 'Teste User', cpf: '12345678901', phone: '31999999999' }, // Usuário padrão
+]; // { email, fullName, cpf, phone, token, pin, password }
+
+const JWT_SECRET = 'supersecretjwtkey123';
 
 app.post('/login', (req, res) => {
   const { email, token } = req.body;
   console.log('Backend: Login solicitado:', email, token);
   const user = users.find(u => u.email === email && u.token === token);
   if (user) {
-    res.json({ success: true, token: 'fake-jwt-token' });
+    const jwtToken = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+    res.json({ success: true, token: jwtToken });
   } else {
     res.status(401).json({ success: false, error: 'Credenciais inválidas' });
   }

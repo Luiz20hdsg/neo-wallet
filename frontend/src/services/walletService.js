@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const WALLET_API_URL = 'http://192.168.3.65:3001/wallet'; // Ajuste conforme o IP
+const WALLET_API_URL = 'http://192.168.3.65:3001/wallet'; // IP da máquina na rede Wi-Fi
 
 const getAuthHeaders = async () => {
   const token = await AsyncStorage.getItem('token');

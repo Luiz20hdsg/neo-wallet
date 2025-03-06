@@ -11,21 +11,36 @@ const HomeScreen = ({ navigation }) => {
   const [hideBalance, setHideBalance] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState(null);
+  const [isReady, setIsReady] = useState(false); // Controle de prontidão
   const fadeAnim = new Animated.Value(0);
 
   useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 1000, useNativeDriver: true }).start();
-    loadData();
+    console.log('HomeScreen: Iniciando carregamento');
+    const timer = setTimeout(() => {
+      setIsReady(true);
+      loadData();
+      Animated.timing(fadeAnim, { toValue: 1, duration: 1000, useNativeDriver: true }).start();
+    }, 1000); // Delay para garantir ambiente pronto
+    return () => clearTimeout(timer);
   }, []);
 
   const loadData = async () => {
     try {
+      console.log('HomeScreen: Tentando carregar dados');
       const balanceData = await fetchBalance();
-      const transactionData = await fetchTransactions();
+      console.log('HomeScreen: Saldo recebido:', balanceData);
       if (balanceData.success) setBalance(balanceData.balance);
+      const transactionData = await fetchTransactions();
+      console.log('HomeScreen: Transações recebidas:', transactionData);
       if (transactionData.success) setTransactions(transactionData.transactions);
     } catch (error) {
-      console.error('Erro ao carregar dados:', error);
+      console.error('HomeScreen: Erro ao carregar dados:', error.message);
+      // Usa valores padrão como fallback
+      setBalance({ BRL: 1234.56, USD: 200, BTC: 0.05 });
+      setTransactions([
+        { id: '1', date: '2025-03-04', description: 'Supermercado', asset: 'BRL', amount: -150.00 },
+        { id: '2', date: '2025-03-03', description: 'João', asset: 'BRL', amount: 200.00 },
+      ]);
     }
   };
 
@@ -41,18 +56,20 @@ const HomeScreen = ({ navigation }) => {
 
   const handleAssetPress = (asset) => setSelectedAsset(selectedAsset === asset ? null : asset);
 
+  if (!isReady) {
+    return <View><Text>Carregando...</Text></View>;
+  }
+
   return (
     <ScrollView style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <Animated.View style={{ opacity: fadeAnim }}>
-        {/* Cabeçalho */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Olá, Luiz!</Text>
-          <TouchableOpacity onPress={() => {/* Abrir menu */}}>
+          <TouchableOpacity onPress={handleLogout}>
             <View style={styles.accountIcon}><Text style={styles.accountText}>LS</Text></View>
           </TouchableOpacity>
         </View>
 
-        {/* Switch Button */}
         <View style={styles.switchContainer}>
           <TouchableOpacity style={[styles.switchButton, !selectedAsset && styles.switchActive]} onPress={() => setSelectedAsset(null)}>
             <Text style={styles.switchText}>Carteira</Text>
@@ -62,7 +79,6 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Card de Saldo */}
         {!selectedAsset && (
           <View style={styles.balanceCard}>
             <TouchableOpacity onPress={() => setHideBalance(!hideBalance)}>
@@ -79,7 +95,6 @@ const HomeScreen = ({ navigation }) => {
           </View>
         )}
 
-        {/* Lista de Ativos */}
         {!selectedAsset && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Seus Ativos</Text>
@@ -89,7 +104,6 @@ const HomeScreen = ({ navigation }) => {
           </View>
         )}
 
-        {/* Detalhes do Ativo Selecionado */}
         {selectedAsset && (
           <View style={styles.assetDetail}>
             <Text style={styles.assetTitle}>{selectedAsset}</Text>
@@ -112,7 +126,6 @@ const HomeScreen = ({ navigation }) => {
           </View>
         )}
 
-        {/* Histórico */}
         {!selectedAsset && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Histórico</Text>
@@ -129,7 +142,6 @@ const HomeScreen = ({ navigation }) => {
           </View>
         )}
 
-        {/* Widgets */}
         {!selectedAsset && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Widgets</Text>
