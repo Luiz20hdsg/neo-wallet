@@ -42,6 +42,21 @@ services:
     networks:
       - neo-network
 
+  # Wallet Service (Novo Microserviço)
+  wallet-service:
+    build: ./wallet-service
+    container_name: neo_wallet
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://admin:senhaadmin@mongodb:27017/neo-wallet?authSource=admin
+      - JWT_SECRET=supersecretjwtkey123
+    depends_on:
+      - mongodb
+    networks:
+      - neo-network
+
   # API Gateway
   api-gateway:
     image: nginx:1.23-alpine
@@ -53,6 +68,7 @@ services:
       - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - auth-service
+      - wallet-service
     networks:
       - neo-network
 
