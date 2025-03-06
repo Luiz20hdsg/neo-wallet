@@ -15,7 +15,7 @@ mongoose.connect("mongodb://localhost:27017/walletDB", {
 // Rotas da API
 app.use("/wallet", walletRoutes);
 
-const PORT = 3000; //porta definida
+const PORT = 3001; //porta definida
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
