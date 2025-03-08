@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, RefreshControl } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FaceMonitor from '../components/FaceMonitor';
 import { fetchBalance, fetchTransactions, sendMoney, exchangeAssets, depositMoney } from '../services/walletService';
@@ -11,7 +10,7 @@ const HomeScreen = ({ navigation }) => {
   const [hideBalance, setHideBalance] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState(null);
-  const [isReady, setIsReady] = useState(false); // Controle de prontidão
+  const [isReady, setIsReady] = useState(false);
   const fadeAnim = new Animated.Value(0);
 
   useEffect(() => {
@@ -20,7 +19,7 @@ const HomeScreen = ({ navigation }) => {
       setIsReady(true);
       loadData();
       Animated.timing(fadeAnim, { toValue: 1, duration: 1000, useNativeDriver: true }).start();
-    }, 1000); // Delay para garantir ambiente pronto
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -35,7 +34,6 @@ const HomeScreen = ({ navigation }) => {
       if (transactionData.success) setTransactions(transactionData.transactions);
     } catch (error) {
       console.error('HomeScreen: Erro ao carregar dados:', error.message);
-      // Usa valores padrão como fallback
       setBalance({ BRL: 1234.56, USD: 200, BTC: 0.05 });
       setTransactions([
         { id: '1', date: '2025-03-04', description: 'Supermercado', asset: 'BRL', amount: -150.00 },
@@ -133,7 +131,6 @@ const HomeScreen = ({ navigation }) => {
               <TransactionItem key={tx.id} date={tx.date} description={tx.description} amount={tx.amount} asset={tx.asset} />
             )) : (
               <View style={styles.emptyContainer}>
-                <Icon name="activity" size={40} color="#666" />
                 <Text style={styles.emptyText}>Nenhuma transação ainda</Text>
                 <CustomButton title="Voltar à Tela Inicial" onPress={() => {}} />
               </View>
@@ -157,9 +154,10 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
+// Definições dos componentes embutidos
 const CustomButton = ({ title, icon, onPress, style }) => (
   <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-    <Icon name={icon} size={20} color="#fff" />
+    <Text>{icon || ''}</Text>
     <Text style={styles.buttonText}>{title}</Text>
   </TouchableOpacity>
 );
@@ -169,7 +167,7 @@ const AssetItem = ({ asset, amount, onPress }) => (
     <Text style={styles.assetSymbol}>{asset === 'BRL' ? 'R$' : asset === 'USD' ? '$' : '₿'}</Text>
     <Text style={styles.assetName}>{asset}</Text>
     <Text style={styles.assetAmount}>{amount.toFixed(2)}</Text>
-    <Icon name={Math.random() > 0.5 ? 'trending-up' : 'trending-down'} size={20} color={Math.random() > 0.5 ? '#10B981' : '#EF4444'} />
+    <Text>{Math.random() > 0.5 ? '↑' : '↓'}</Text>
   </TouchableOpacity>
 );
 
