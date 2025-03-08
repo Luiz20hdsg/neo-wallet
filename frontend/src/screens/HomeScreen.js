@@ -50,6 +50,11 @@ const HomeScreen = ({ navigation }) => {
     animateSwitch();
   };
 
+  const handleAssetPress = (asset) => {
+    console.log(`HomeScreen: Ativo selecionado: ${asset}`);
+    // Podemos expandir isso depois para exibir detalhes do ativo
+  };
+
   if (!isReady) {
     return <View><Text>Carregando...</Text></View>;
   }
@@ -125,9 +130,28 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
       )}
+
+      {console.log('HomeScreen: Renderizando ativos')}
+      {isWalletSelected && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Seus Ativos</Text>
+          {Object.entries(balance).map(([asset, amount]) => (
+            <AssetItem key={asset} asset={asset} amount={amount} onPress={() => handleAssetPress(asset)} />
+          ))}
+        </View>
+      )}
     </ScrollView>
   );
 };
+
+const AssetItem = ({ asset, amount, onPress }) => (
+  <TouchableOpacity style={styles.assetItem} onPress={onPress}>
+    <Text style={styles.assetSymbol}>{asset === 'BRL' ? 'R$' : asset === 'USD' ? '$' : '₿'}</Text>
+    <Text style={styles.assetName}>{asset}</Text>
+    <Text style={styles.assetAmount}>{amount.toFixed(2)}</Text>
+    <Text>{Math.random() > 0.5 ? '↑' : '↓'}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F9FAFB' },
@@ -140,7 +164,7 @@ const styles = StyleSheet.create({
   switchTrack: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#FFFFFF', // Fundo branco
+    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -151,13 +175,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 100,
     height: 30,
-    backgroundColor: '#3B82F6', // Movedor na cor azul da aplicação
+    backgroundColor: '#3B82F6',
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  switchText: { fontSize: 14, color: '#fff', fontWeight: 'bold' }, // Texto dentro do movedor (branco)
-  switchLabel: { fontSize: 14, color: '#000000' }, // Texto "Carteira" e "Tokenização" em preto
+  switchText: { fontSize: 14, color: '#fff', fontWeight: 'bold' },
+  switchLabel: { fontSize: 14, color: '#000000' },
   balanceCard: { backgroundColor: '#fff', margin: 20, padding: 20, borderRadius: 15, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10, elevation: 5 },
   balanceLabel: { fontSize: 14, color: '#666' },
   balanceValue: { fontSize: 32, fontWeight: 'bold', color: '#1E3A8A', marginVertical: 10 },
@@ -166,6 +190,12 @@ const styles = StyleSheet.create({
   roundButton: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#3B82F6', justifyContent: 'center', alignItems: 'center', marginBottom: 5 },
   buttonIcon: { fontSize: 20, color: '#fff' },
   buttonLabel: { fontSize: 12, color: '#1E3A8A', textAlign: 'center' },
+  section: { marginHorizontal: 20, marginBottom: 20 },
+  sectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+  assetItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#eee' },
+  assetSymbol: { fontSize: 20, marginRight: 10 },
+  assetName: { fontSize: 16, flex: 1 },
+  assetAmount: { fontSize: 16, fontWeight: 'bold', marginRight: 10 },
 });
 
 export default HomeScreen;
