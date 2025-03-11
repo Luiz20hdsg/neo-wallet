@@ -22,5 +22,13 @@
     "react-native-reanimated": "~3.16.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.19.12"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-class-properties": "^7.25.9",
+    "@babel/plugin-transform-private-methods": "^7.25.9",
+    "@babel/plugin-transform-private-property-in-object": "^7.25.9",
+    "axios": "^1.8.2",
+    "metro-react-native-babel-preset": "^0.77.0",
+    "react-native-dotenv": "^3.4.11"
   }
 }
