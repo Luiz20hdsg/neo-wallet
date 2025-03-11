@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchBalance, sendMoney, exchangeAssets, depositMoney } from '../services/walletService';
+import { fetchBalance, fetchTransactions, sendMoney, exchangeAssets, depositMoney } from '../services/walletService';
 
 const HomeScreen = ({ navigation }) => {
   const [balance, setBalance] = useState({ BRL: 0, USD: 0, BTC: 0 });
+  const [transactions, setTransactions] = useState([]);
   const [hideBalance, setHideBalance] = useState(false);
   const [isWalletSelected, setIsWalletSelected] = useState(true); // true para Carteira, false para Tokenização
   const [isReady, setIsReady] = useState(false);
@@ -26,9 +27,17 @@ const HomeScreen = ({ navigation }) => {
       const balanceData = await fetchBalance();
       console.log('HomeScreen: Saldo recebido:', balanceData);
       if (balanceData.success) setBalance(balanceData.balance);
+
+      const transactionData = await fetchTransactions();
+      console.log('HomeScreen: Transações recebidas:', transactionData);
+      if (transactionData.success) setTransactions(transactionData.transactions);
     } catch (error) {
       console.error('HomeScreen: Erro ao carregar dados:', error.message);
       setBalance({ BRL: 1234.56, USD: 200, BTC: 0.05 });
+      setTransactions([
+        { id: '1', date: '2025-03-04', description: 'Supermercado', asset: 'BRL', amount: -150.00 },
+        { id: '2', date: '2025-03-03', description: 'João', asset: 'BRL', amount: 200.00 },
+      ]);
     }
   };
 
@@ -140,6 +149,31 @@ const HomeScreen = ({ navigation }) => {
           ))}
         </View>
       )}
+
+      {console.log('HomeScreen: Renderizando historico')}
+      {isWalletSelected && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Histórico</Text>
+          {transactions.length ? transactions.map(tx => (
+            <TransactionItem key={tx.id} date={tx.date} description={tx.description} amount={tx.amount} asset={tx.asset} />
+          )) : (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>Nenhuma transação ainda</Text>
+            </View>
+          )}
+          {transactions.length > 0 && <TouchableOpacity><Text style={styles.seeAllText}>Ver todas</Text></TouchableOpacity>}
+        </View>
+      )}
+
+      {console.log('HomeScreen: Renderizando widgets')}
+      {isWalletSelected && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Widgets</Text>
+          <Widget title="Gastos Mensais" content="R$ 450,00" />
+          <Widget title="Metas" content="R$ 300/500" />
+          <Widget title="Tendências do Mercado" content="BTC ↑ 2.5%" />
+        </View>
+      )}
     </ScrollView>
   );
 };
@@ -151,6 +185,21 @@ const AssetItem = ({ asset, amount, onPress }) => (
     <Text style={styles.assetAmount}>{amount.toFixed(2)}</Text>
     <Text>{Math.random() > 0.5 ? '↑' : '↓'}</Text>
   </TouchableOpacity>
+);
+
+const TransactionItem = ({ date, description, amount, asset }) => (
+  <View style={styles.transactionItem}>
+    <Text style={styles.transactionDate}>{date}</Text>
+    <Text style={styles.transactionDescription}>{description}</Text>
+    <Text style={[styles.transactionAmount, { color: amount > 0 ? '#10B981' : '#EF4444' }]}>{amount > 0 ? '+' : ''}{amount.toFixed(2)} {asset}</Text>
+  </View>
+);
+
+const Widget = ({ title, content }) => (
+  <View style={styles.widget}>
+    <Text style={styles.widgetTitle}>{title}</Text>
+    <Text style={styles.widgetContent}>{content}</Text>
+  </View>
 );
 
 const styles = StyleSheet.create({
@@ -196,6 +245,16 @@ const styles = StyleSheet.create({
   assetSymbol: { fontSize: 20, marginRight: 10 },
   assetName: { fontSize: 16, flex: 1 },
   assetAmount: { fontSize: 16, fontWeight: 'bold', marginRight: 10 },
+  transactionItem: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#eee' },
+  transactionDate: { fontSize: 14, color: '#666' },
+  transactionDescription: { fontSize: 14, flex: 1, marginHorizontal: 10 },
+  transactionAmount: { fontSize: 14, fontWeight: 'bold' },
+  emptyContainer: { alignItems: 'center', padding: 20 },
+  emptyText: { fontSize: 16, color: '#666', marginVertical: 10 },
+  seeAllText: { color: '#3B82F6', textAlign: 'center', marginTop: 10 },
+  widget: { backgroundColor: '#fff', padding: 15, borderRadius: 10, marginBottom: 10 },
+  widgetTitle: { fontSize: 16, fontWeight: 'bold' },
+  widgetContent: { fontSize: 14, color: '#666', marginTop: 5 },
 });
 
 export default HomeScreen;
