@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginScreen from './screens/LoginScreen';
 import { HomeScreen, AssetDetailScreen } from './screens/HomeScreen';
+import AllAssetsScreen from './screens/AllAssetsScreen'; // Import the new screen
 import { fetchBalance } from './services/walletService';
 
 const Stack = createStackNavigator();
@@ -65,6 +66,7 @@ function App() {
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="AssetDetail" component={AssetDetailScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="AllAssets" component={AllAssetsScreen} options={{ headerShown: false }} />
           </Stack.Navigator>
         </View>
       ) : (
@@ -72,6 +74,7 @@ function App() {
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="AssetDetail" component={AssetDetailScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="AllAssets" component={AllAssetsScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       )}
     </NavigationContainer>
